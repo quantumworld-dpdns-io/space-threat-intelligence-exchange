@@ -69,7 +69,6 @@ def threat_report_to_stix(report: ThreatReport) -> Report:
         published=report.created_at or datetime.utcnow(),
         confidence=CONFIDENCE_TO_STIX.get(report.confidence, 50),
         object_refs=[],
-        external_references=external_refs or None,
         allow_custom=True,
     )
 
