@@ -42,11 +42,13 @@ class DuckDBAnalytics:
     def query_arrow(self, sql: str) -> pa.Table:
         if self.conn is None:
             self.connect()
+        assert self.conn is not None
         return self.conn.execute(sql).arrow()
 
     def ingest_report(self, report_data: dict):
         if self.conn is None:
             self.connect()
+        assert self.conn is not None
         self.conn.execute("""
             INSERT INTO analytics.threat_summary BY NAME
             VALUES (?)
