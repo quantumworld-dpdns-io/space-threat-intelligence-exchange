@@ -72,8 +72,6 @@ def threat_report_to_stix(report: ThreatReport) -> Report:
         external_references=external_refs or None,
         allow_custom=True,
     )
-        allow_custom=True,
-    )
 
 
 def threat_report_from_stix(stix_report: dict[str, Any]) -> dict[str, Any] | None:
