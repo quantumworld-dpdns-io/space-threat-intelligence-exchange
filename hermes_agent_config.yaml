@@ -1,0 +1,47 @@
+# Hermes Agent Configuration for Space Threat Intelligence Exchange
+name: stie-threat-monitor
+description: Persistent AI agent for monitoring space threat intelligence
+
+agent:
+  model: gemma3
+  provider: ollama
+  endpoint: http://localhost:11434
+
+skills:
+  - name: cti-monitor
+    path: .opencode/skills/threat-report/SKILL.md
+
+tools:
+  - terminal
+  - filesystem
+  - web_search
+
+gateway:
+  enabled: false
+
+memory:
+  enabled: true
+  type: persistent
+
+cron:
+  - name: daily-threat-summary
+    schedule: "0 9 * * *"
+    task: "Summarize new threat reports from the last 24 hours"
+    channel: cli
+
+  - name: weekly-security-scan
+    schedule: "0 6 * * 1"
+    task: "Run security tests and report results"
+    channel: cli
+
+permissions:
+  bash:
+    allowed_commands:
+      - "stie"
+      - "make test"
+      - "poetry run"
+  filesystem:
+    allowed_paths:
+      - "src/"
+      - "tests/"
+      - "reports/"

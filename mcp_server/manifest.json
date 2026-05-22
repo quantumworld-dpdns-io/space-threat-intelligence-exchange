@@ -1,0 +1,21 @@
+{
+  "name": "stie-threat-intel",
+  "version": "0.1.0",
+  "description": "MCP server for querying space threat intelligence data",
+  "runtime": "python",
+  "command": "python",
+  "args": ["-m", "mcp_server.server"],
+  "env": {
+    "QDRANT_URL": "http://localhost:6333",
+    "AI_LLM_API_URL": "http://localhost:11434",
+    "LOG_LEVEL": "INFO"
+  },
+  "compatibility": {
+    "hosts": ["claude-desktop", "opencode"],
+    "platforms": ["darwin", "linux", "windows"]
+  },
+  "permissions": {
+    "network": ["localhost:6333", "localhost:11434"],
+    "filesystem": []
+  }
+}

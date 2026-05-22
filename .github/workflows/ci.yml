@@ -2,14 +2,191 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
     branches: [main]
 
+env:
+  PYTHON_VERSION: "3.11"
+  POETRY_VERSION: "1.8.0"
+
 jobs:
-  build:
+  lint:
+    name: Lint & Format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Placeholder build step
-        run: echo "Add your build/test commands here"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry install --no-interaction
+      - name: Run Ruff linter
+        run: poetry run ruff check src/ tests/
+      - name: Check formatting
+        run: poetry run ruff format --check src/ tests/
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry install --no-interaction
+      - name: Run MyPy
+        run: poetry run mypy src/
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry install --no-interaction
+      - name: Run unit tests
+        run: poetry run pytest tests/unit -v --cov=src --cov-report=xml --cov-report=term
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: stie
+          POSTGRES_PASSWORD: stie
+          POSTGRES_DB: stie
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry install --no-interaction
+      - name: Run integration tests
+        run: poetry run pytest tests/integration -v --cov=src --cov-report=xml --cov-append
+        env:
+          DATABASE_URL: postgresql+asyncpg://stie:stie@localhost:5432/stie
+
+  robot-tests:
+    name: Robot Framework Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry install --no-interaction
+      - name: Start API server
+        run: |
+          poetry run uvicorn stie.api.app:create_app --host 0.0.0.0 --port 8000 --factory &
+          sleep 3
+      - name: Run Robot Framework tests
+        run: poetry run robot --outputdir reports/robot tests/robot/
+      - name: Run OWASP security tests
+        run: poetry run robot --outputdir reports/security tests/security/
+      - name: Upload Robot reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-reports
+          path: reports/
+        if: always()
+
+  security-sast:
+    name: SAST Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry install --no-interaction
+      - name: Bandit SAST
+        run: poetry run bandit -r src/ -f json -o reports/bandit.json
+      - name: Semgrep SAST
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/python
+
+  security-dependency:
+    name: Dependency Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry export -f requirements.txt --output requirements.txt
+      - name: Safety check
+        uses: pyupio/safety-action@v1
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+
+  security-secrets:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+
+  docker:
+    name: Docker Build & Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: stie:latest
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: stie:latest
+          format: sarif
+          output: trivy-results.sarif
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+        if: always()

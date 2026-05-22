@@ -1,0 +1,26 @@
+{
+  "name": "space-threat-intelligence-exchange",
+  "description": "Decentralized CTI sharing for satellite intrusions and GNSS spoofing",
+  "agent": {
+    "mode": "full",
+    "skills": [
+      ".opencode/skills/threat-report/SKILL.md",
+      ".opencode/skills/security-test/SKILL.md",
+      ".opencode/skills/ci-pipeline/SKILL.md",
+      ".opencode/skills/data-analysis/SKILL.md"
+    ],
+    "mcp_servers": [
+      {
+        "name": "stie-threat-intel",
+        "url": "http://localhost:8100/mcp"
+      }
+    ]
+  },
+  "bash": {
+    "allowed_paths": ["src", "tests", "scripts", ".github"]
+  },
+  "git": {
+    "auto_commit": false,
+    "protected_branches": ["main"]
+  }
+}

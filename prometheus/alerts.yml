@@ -1,0 +1,58 @@
+groups:
+  - name: stie-alerts
+    rules:
+      - alert: APIHighLatency
+        expr: http_request_duration_seconds{p50} > 2.0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API latency exceeds 2 seconds"
+
+      - alert: APIHighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API error rate exceeds 5%"
+
+      - alert: DatabaseDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL database is unreachable"
+
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is unreachable"
+
+      - alert: QdrantDown
+        expr: qdrant_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Qdrant vector database is unreachable"
+
+      - alert: HighReportSubmissionRate
+        expr: rate(report_submissions_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High volume of report submissions"
+
+      - alert: P2PPeersLow
+        expr: p2p_connected_peers < 3
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low number of connected P2P peers"

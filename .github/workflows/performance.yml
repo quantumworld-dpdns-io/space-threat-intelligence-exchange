@@ -1,0 +1,67 @@
+name: Performance Tests
+
+on:
+  schedule:
+    - cron: "0 4 * * 1"  # Every Monday
+  workflow_dispatch:
+
+jobs:
+  load-test:
+    name: Load Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: stie
+          POSTGRES_PASSWORD: stie
+          POSTGRES_DB: stie
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install --no-interaction
+          poetry run pip install locust
+      - name: Start API server
+        run: |
+          poetry run uvicorn stie.api.app:create_app --host 0.0.0.0 --port 8000 --factory &
+          sleep 3
+      - name: Run Locust load test
+        run: |
+          poetry run locust --headless -u 100 -r 10 --run-time 5m
+          --host http://localhost:8000
+          --csv reports/loadtest
+      - name: Upload load test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: loadtest-results
+          path: reports/loadtest*
+
+  benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install --no-interaction
+      - name: Run benchmarks
+        run: |
+          poetry run pytest tests/performance/ -v --benchmark-json reports/benchmark.json
+      - name: Upload benchmarks
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: reports/benchmark.json

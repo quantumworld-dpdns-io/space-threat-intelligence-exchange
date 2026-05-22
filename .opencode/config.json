@@ -1,0 +1,48 @@
+{
+  "name": "space-threat-intelligence-exchange",
+  "description": "Decentralized CTI sharing for satellite intrusions and GNSS spoofing",
+  "version": "0.1.0",
+  "agent": {
+    "model": "big-pickle",
+    "instructions": ".opencode/instructions.md"
+  },
+  "skills": [
+    ".opencode/skills/threat-report/SKILL.md",
+    ".opencode/skills/security-test/SKILL.md",
+    ".opencode/skills/ci-pipeline/SKILL.md",
+    ".opencode/skills/data-analysis/SKILL.md"
+  ],
+  "tools": {
+    "enabled": ["read", "edit", "write", "bash", "grep", "glob", "websearch", "webfetch"],
+    "mcp_servers": [
+      {
+        "name": "stie-threat-intel",
+        "url": "http://localhost:8100/mcp"
+      }
+    ]
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics_port": 8001
+  },
+  "permissions": {
+    "bash": {
+      "allowed_commands": [
+        "poetry run",
+        "pytest",
+        "ruff",
+        "mypy",
+        "robot",
+        "docker compose",
+        "kubectl",
+        "helm"
+      ],
+      "allowed_paths": ["src", "tests", "scripts"]
+    },
+    "git": {
+      "allow_commit": true,
+      "allow_push": true,
+      "branches": ["dev", "feature/*", "fix/*"]
+    }
+  }
+}
