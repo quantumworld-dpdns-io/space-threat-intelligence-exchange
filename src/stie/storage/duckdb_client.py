@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import duckdb
 import pyarrow as pa
@@ -11,7 +11,7 @@ from stie.config.settings import settings
 class DuckDBAnalytics:
     def __init__(self):
         self.path = settings.duckdb_path
-        self.conn: Optional[duckdb.DuckDBPyConnection] = None
+        self.conn: duckdb.DuckDBPyConnection | None = None
 
     def connect(self):
         self.conn = duckdb.connect(self.path)

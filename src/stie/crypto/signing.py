@@ -1,18 +1,12 @@
 from __future__ import annotations
 
 import json
-from typing import Optional
 
-from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-    Ed25519PrivateKey,
-    Ed25519PublicKey,
-)
 from cryptography.exceptions import InvalidSignature
 
 from stie.crypto.keys import (
     deserialize_private_key,
     deserialize_public_key,
-    serialize_public_key,
     get_key_fingerprint,
 )
 
@@ -53,7 +47,7 @@ def create_signed_envelope(
     }
 
 
-def verify_signed_envelope(envelope: dict) -> tuple[bool, Optional[str]]:
+def verify_signed_envelope(envelope: dict) -> tuple[bool, str | None]:
     try:
         report_data = envelope["report"]
         signature = envelope["signature"]

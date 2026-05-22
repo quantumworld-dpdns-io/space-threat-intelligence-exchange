@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from stie.models.threat_report import Severity, Confidence
+from stie.models.threat_report import Confidence, Severity
 
 
 class CampaignBase(BaseModel):
@@ -13,8 +12,8 @@ class CampaignBase(BaseModel):
     description: str
     severity: Severity = Field(default=Severity.MEDIUM)
     confidence: Confidence = Field(default=Confidence.MEDIUM)
-    actor: Optional[str] = None
-    motivation: Optional[str] = None
+    actor: str | None = None
+    motivation: str | None = None
     target_sectors: list[str] = Field(default_factory=list)
     target_regions: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)

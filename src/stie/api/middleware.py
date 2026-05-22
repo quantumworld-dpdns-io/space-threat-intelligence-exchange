@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import uuid
-import time
 import logging
-from typing import Awaitable, Callable
+import time
+import uuid
+from collections.abc import Awaitable, Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware

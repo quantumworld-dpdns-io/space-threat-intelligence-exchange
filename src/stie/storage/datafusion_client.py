@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from datafusion import SessionContext
-
-from stie.config.settings import settings
 
 
 class DataFusionAnalytics:
     def __init__(self):
-        self.ctx: Optional[SessionContext] = None
+        self.ctx: SessionContext | None = None
 
     def connect(self):
         self.ctx = SessionContext()

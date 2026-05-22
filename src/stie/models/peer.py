@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -21,8 +20,8 @@ class PeerInfo(BaseModel):
     status: PeerStatus = PeerStatus.UNKNOWN
     version: str = "0.1.0"
     capabilities: list[str] = Field(default_factory=list)
-    last_seen: Optional[datetime] = None
-    latency_ms: Optional[float] = None
+    last_seen: datetime | None = None
+    latency_ms: float | None = None
     report_count: int = 0
     trust_score: float = 0.0
 

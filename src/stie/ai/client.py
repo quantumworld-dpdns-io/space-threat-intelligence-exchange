@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
@@ -13,13 +13,13 @@ class LLMClient:
         self.model = settings.ai_llm_model
         self.api_url = settings.ai_llm_api_url
         self.api_key = settings.ai_llm_api_key
-        self.client: Optional[httpx.AsyncClient] = None
+        self.client: httpx.AsyncClient | None = None
 
     async def _ensure_client(self):
         if self.client is None:
             self.client = httpx.AsyncClient(base_url=self.api_url, timeout=60.0)
 
-    async def complete(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> str:
+    async def complete(self, prompt: str, system_prompt: str | None = None, **kwargs) -> str:
         await self._ensure_client()
         if self.provider == "ollama":
             return await self._ollama_complete(prompt, system_prompt, **kwargs)
@@ -28,7 +28,7 @@ class LLMClient:
         else:
             raise ValueError(f"Unsupported LLM provider: {self.provider}")
 
-    async def _ollama_complete(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> str:
+    async def _ollama_complete(self, prompt: str, system_prompt: str | None = None, **kwargs) -> str:
         payload: dict[str, Any] = {
             "model": self.model,
             "prompt": prompt,
@@ -42,7 +42,7 @@ class LLMClient:
         data = response.json()
         return data.get("response", "")
 
-    async def _openai_complete(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> str:
+    async def _openai_complete(self, prompt: str, system_prompt: str | None = None, **kwargs) -> str:
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})

@@ -4,7 +4,6 @@ from typing import Any
 
 from stie.ai.client import llm_client
 
-
 ENRICHMENT_SYSTEM_PROMPT = """You are a space threat intelligence analyst. Given a threat report, provide enrichment including:
 1. Potential threat actor attribution
 2. Related tactics and techniques (MITRE ATT&CK for Space)

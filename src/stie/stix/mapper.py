@@ -1,26 +1,21 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 import stix2
 from stix2 import (
-    Indicator,
-    Identity,
-    Campaign,
-    CourseOfAction,
-    Report,
     Bundle,
+    Report,
 )
 
 from stie.models.threat_report import (
+    Confidence,
+    Severity,
     ThreatReport,
     ThreatType,
-    Severity,
-    Confidence,
     TLPLevel,
 )
-
 
 THREAT_TYPE_TO_STIX_LABEL: dict[ThreatType, str] = {
     ThreatType.SATELLITE_INTRUSION: "satellite-intrusion",
@@ -76,7 +71,7 @@ def threat_report_to_stix(report: ThreatReport) -> Report:
     )
 
 
-def threat_report_from_stix(stix_report: dict[str, Any]) -> Optional[dict[str, Any]]:
+def threat_report_from_stix(stix_report: dict[str, Any]) -> dict[str, Any] | None:
     try:
         return {
             "title": stix_report.get("name", "Untitled Report"),

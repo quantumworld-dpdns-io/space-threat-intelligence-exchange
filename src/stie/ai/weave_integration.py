@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from stie.config.settings import settings
 
@@ -32,7 +33,7 @@ class WeaveTracker:
         except Exception:
             return func
 
-    async def log_evaluation(self, name: str, score: float, metadata: Optional[dict[str, Any]] = None):
+    async def log_evaluation(self, name: str, score: float, metadata: dict[str, Any] | None = None):
         if not self.enabled:
             return
         try:

@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
-
-from stie.config.settings import settings
 
 router = APIRouter()
 

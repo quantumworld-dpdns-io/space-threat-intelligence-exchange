@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import typer
 from rich.console import Console
-from rich.table import Table
 
 app = typer.Typer(
     name="stie",
@@ -67,7 +66,7 @@ def keygen(
     with open(pub_path, "w") as f:
         f.write(serialize_public_key(pub))
 
-    console.print(f"[green]Generated key pair:[/green]")
+    console.print("[green]Generated key pair:[/green]")
     console.print(f"  Private key: {priv_path}")
     console.print(f"  Public key:  {pub_path}")
 
@@ -79,6 +78,7 @@ def sign(
 ):
     """Sign a threat report."""
     import json
+
     from stie.crypto.signing import create_signed_envelope
 
     with open(file) as f:
@@ -102,6 +102,7 @@ def verify(
 ):
     """Verify a signed threat report."""
     import json
+
     from stie.crypto.signing import verify_signed_envelope
 
     with open(file) as f:
@@ -111,7 +112,7 @@ def verify(
     if valid:
         console.print(f"[green]Signature VALID[/green] - Fingerprint: {fingerprint}")
     else:
-        console.print(f"[red]Signature INVALID[/red]")
+        console.print("[red]Signature INVALID[/red]")
 
 
 @app.command()

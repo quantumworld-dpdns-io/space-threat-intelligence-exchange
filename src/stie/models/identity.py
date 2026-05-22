@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -9,16 +8,16 @@ from pydantic import BaseModel, Field
 class Organization(BaseModel):
     id: str
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     sector: str = "space"
-    country: Optional[str] = None
+    country: str | None = None
     created_at: datetime
 
 
 class IdentityBase(BaseModel):
     display_name: str = Field(min_length=1, max_length=200)
-    email: Optional[str] = None
-    organization_id: Optional[str] = None
+    email: str | None = None
+    organization_id: str | None = None
     public_key: str = Field(description="Ed25519 public key in PEM format")
     role: str = Field(default="analyst")
 
@@ -32,7 +31,7 @@ class Identity(IdentityBase):
     fingerprint: str
     created_at: datetime
     updated_at: datetime
-    last_seen: Optional[datetime] = None
+    last_seen: datetime | None = None
     is_active: bool = True
 
     class Config:

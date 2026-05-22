@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -81,14 +80,14 @@ class ThreatReportBase(BaseModel):
     confidence: Confidence = Field(default=Confidence.MEDIUM)
     tlp_level: TLPLevel = Field(default=TLPLevel.GREEN)
 
-    satellite_intrusion_type: Optional[SatelliteIntrusionType] = None
+    satellite_intrusion_type: SatelliteIntrusionType | None = None
     gnss_types: list[GNSSType] = Field(default_factory=list)
 
     affected_satellites: list[str] = Field(default_factory=list)
     affected_systems: list[str] = Field(default_factory=list)
 
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
     observables: list[Observable] = Field(default_factory=list)
     courses_of_action: list[CourseOfAction] = Field(default_factory=list)
@@ -99,25 +98,25 @@ class ThreatReportBase(BaseModel):
 
 class ThreatReportCreate(ThreatReportBase):
     author_id: str
-    organization_id: Optional[str] = None
+    organization_id: str | None = None
 
 
 class ThreatReportUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    severity: Optional[Severity] = None
-    confidence: Optional[Confidence] = None
-    tlp_level: Optional[TLPLevel] = None
-    observables: Optional[list[Observable]] = None
-    courses_of_action: Optional[list[CourseOfAction]] = None
-    tags: Optional[list[str]] = None
+    title: str | None = None
+    description: str | None = None
+    severity: Severity | None = None
+    confidence: Confidence | None = None
+    tlp_level: TLPLevel | None = None
+    observables: list[Observable] | None = None
+    courses_of_action: list[CourseOfAction] | None = None
+    tags: list[str] | None = None
 
 
 class ThreatReport(ThreatReportBase):
     id: str
     author_id: str
-    organization_id: Optional[str] = None
-    signature: Optional[str] = None
+    organization_id: str | None = None
+    signature: str | None = None
     signature_verified: bool = False
     created_at: datetime
     updated_at: datetime
@@ -132,14 +131,14 @@ class ThreatReportResponse(ThreatReport):
 
 
 class ThreatReportSearch(BaseModel):
-    query: Optional[str] = None
-    threat_type: Optional[ThreatType] = None
-    severity: Optional[Severity] = None
-    tlp_level: Optional[TLPLevel] = None
-    confidence: Optional[Confidence] = None
-    tags: Optional[list[str]] = None
-    author_id: Optional[str] = None
-    start_time_from: Optional[datetime] = None
-    start_time_to: Optional[datetime] = None
+    query: str | None = None
+    threat_type: ThreatType | None = None
+    severity: Severity | None = None
+    tlp_level: TLPLevel | None = None
+    confidence: Confidence | None = None
+    tags: list[str] | None = None
+    author_id: str | None = None
+    start_time_from: datetime | None = None
+    start_time_to: datetime | None = None
     limit: int = Field(default=50, ge=1, le=500)
     offset: int = Field(default=0, ge=0)

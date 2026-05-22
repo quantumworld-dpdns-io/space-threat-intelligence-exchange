@@ -1,20 +1,18 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
     Ed25519PublicKey,
 )
 from cryptography.hazmat.primitypes.serialization import (
     Encoding,
+    NoEncryption,
     PrivateFormat,
     PublicFormat,
-    NoEncryption,
 )
 
 
-def generate_key_pair() -> Tuple[Ed25519PrivateKey, Ed25519PublicKey]:
+def generate_key_pair() -> tuple[Ed25519PrivateKey, Ed25519PublicKey]:
     private_key = Ed25519PrivateKey.generate()
     public_key = private_key.public_key()
     return private_key, public_key

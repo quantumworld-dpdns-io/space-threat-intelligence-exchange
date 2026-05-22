@@ -1,17 +1,14 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.http.models import (
     Distance,
     VectorParams,
-    CollectionStatus,
 )
 
 from stie.config.settings import settings
 
-qdrant_client: Optional[AsyncQdrantClient] = None
+qdrant_client: AsyncQdrantClient | None = None
 
 
 async def init_qdrant():

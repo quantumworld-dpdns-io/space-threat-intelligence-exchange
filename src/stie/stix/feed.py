@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import httpx
-
-from stie.stix.mapper import threat_report_to_stix
 
 
 class TAXIIClient:
@@ -13,7 +11,7 @@ class TAXIIClient:
         self.collection_id = collection_id
         self.client = httpx.AsyncClient(timeout=30.0)
 
-    async def poll_objects(self, added_after: Optional[str] = None) -> list[dict[str, Any]]:
+    async def poll_objects(self, added_after: str | None = None) -> list[dict[str, Any]]:
         url = f"{self.server_url}/collections/{self.collection_id}/objects"
         params = {}
         if added_after:
@@ -43,6 +41,6 @@ async def fetch_external_feeds(feed_urls: list[str]) -> list[dict[str, Any]]:
                 data = response.json()
                 objects = data.get("objects", []) if isinstance(data, dict) else data
                 all_reports.extend(objects)
-            except Exception as e:
+            except Exception:
                 pass
     return all_reports

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import uuid
 import time
+import uuid
 
 
 def generate_report_id() -> str:

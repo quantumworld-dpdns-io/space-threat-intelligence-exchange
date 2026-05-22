@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import Optional
-
 import redis.asyncio as redis
 
 from stie.config.settings import settings
 
-redis_client: Optional[redis.Redis] = None
+redis_client: redis.Redis | None = None
 
 
 async def init_redis():

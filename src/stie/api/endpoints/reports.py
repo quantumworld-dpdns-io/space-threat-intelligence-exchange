@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from stie.models.threat_report import (
     ThreatReportCreate,
-    ThreatReportUpdate,
     ThreatReportResponse,
     ThreatReportSearch,
+    ThreatReportUpdate,
 )
 from stie.storage.database import get_session
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 

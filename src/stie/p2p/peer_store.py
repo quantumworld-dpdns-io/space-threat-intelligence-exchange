@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import json
-import time
 from pathlib import Path
-from typing import Optional
 
-from stie.models.peer import PeerInfo, PeerStatus
+from stie.models.peer import PeerInfo
 
 
 class PeerStore:
@@ -33,7 +31,7 @@ class PeerStore:
         self.peers.pop(peer_id, None)
         self._save()
 
-    def get_peer(self, peer_id: str) -> Optional[PeerInfo]:
+    def get_peer(self, peer_id: str) -> PeerInfo | None:
         return self.peers.get(peer_id)
 
     def get_known_peers(self, limit: int = 100) -> list[PeerInfo]:

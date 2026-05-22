@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from stie.api.endpoints import health, reports, auth, network, analytics, ai, stix
+from stie.api.endpoints import ai, analytics, auth, health, network, reports, stix
 from stie.api.middleware import (
     LoggingMiddleware,
     RateLimitMiddleware,
@@ -47,9 +47,9 @@ def create_app() -> FastAPI:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from stie.storage.database import init_db, close_db
-    from stie.storage.redis_client import init_redis, close_redis
-    from stie.storage.qdrant_client import init_qdrant, close_qdrant
+    from stie.storage.database import close_db, init_db
+    from stie.storage.qdrant_client import close_qdrant, init_qdrant
+    from stie.storage.redis_client import close_redis, init_redis
 
     await init_db()
     await init_redis()

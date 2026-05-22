@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import asyncio
 import logging
-from typing import Any, Callable, Optional
+from collections.abc import Callable
 
 from stie.config.settings import settings
-from stie.models.peer import PeerInfo, PeerStatus
+from stie.models.peer import PeerInfo
 
 logger = logging.getLogger("stie.p2p")
 
@@ -34,7 +33,7 @@ class P2PManager:
             return
         logger.info("Broadcasting report to %d peers", len(self.peers))
 
-    async def request_report(self, report_id: str) -> Optional[dict]:
+    async def request_report(self, report_id: str) -> dict | None:
         return None
 
     async def discover_peers(self):

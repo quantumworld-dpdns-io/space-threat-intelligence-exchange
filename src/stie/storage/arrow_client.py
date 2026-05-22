@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Optional
-
 import pyarrow as pa
-import pyarrow.parquet as pq
 import pyarrow.dataset as ds
+import pyarrow.parquet as pq
 
 from stie.models.threat_report import ThreatReport
 
@@ -67,7 +65,7 @@ class ArrowExportClient:
         table = self.reports_to_table(reports)
         pq.write_table(table, path)
 
-    def query_parquet(self, path: str, columns: Optional[list[str]] = None) -> pa.Table:
+    def query_parquet(self, path: str, columns: list[str] | None = None) -> pa.Table:
         dataset = ds.dataset(path, format="parquet")
         return dataset.to_table(columns=columns)
 

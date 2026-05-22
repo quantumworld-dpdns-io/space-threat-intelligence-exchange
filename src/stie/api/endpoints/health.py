@@ -3,12 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from stie.config.settings import settings
 from stie.storage.database import get_session
 from stie.storage.redis_client import get_redis
-from stie.config.settings import settings
 
 router = APIRouter()
 
@@ -27,7 +27,7 @@ async def db_health(session: AsyncSession = Depends(get_session)):
     try:
         await session.execute(text("SELECT 1"))
         db_status = "ok"
-    except Exception as e:
+    except Exception:
         db_status = "error"
 
     return {"status": db_status, "type": "postgresql"}
@@ -39,7 +39,7 @@ async def redis_health():
     try:
         await redis_client.ping()
         redis_status = "ok"
-    except Exception as e:
+    except Exception:
         redis_status = "error"
 
     return {"status": redis_status, "type": "redis"}
