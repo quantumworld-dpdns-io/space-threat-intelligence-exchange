@@ -47,6 +47,8 @@ CONFIDENCE_TO_STIX: dict[Confidence, int] = {
 }
 
 
+import uuid
+
 def threat_report_to_stix(report: ThreatReport) -> Report:
     labels = [THREAT_TYPE_TO_STIX_LABEL.get(report.threat_type, "threat-report")]
     labels.extend(report.tags)
@@ -57,13 +59,14 @@ def threat_report_to_stix(report: ThreatReport) -> Report:
     for ref in report.references:
         external_refs.append(stix2.ExternalReference(source_name="stie", url=ref))
 
+    stix_id = f"report--{uuid.uuid5(uuid.NAMESPACE_DNS, report.id)}"
+
     return Report(
-        id=f"report--{report.id}",
+        id=stix_id,
         name=report.title,
         description=report.description,
         report_types=labels,
         published=report.created_at or datetime.utcnow(),
-        created_by_ref=f"identity--{report.author_id}",
         confidence=CONFIDENCE_TO_STIX.get(report.confidence, 50),
         object_refs=[],
         external_references=external_refs or None,
