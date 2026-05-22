@@ -34,6 +34,7 @@ class DuckDBAnalytics:
     def query(self, sql: str) -> list[dict[str, Any]]:
         if self.conn is None:
             self.connect()
+        assert self.conn is not None
         result = self.conn.execute(sql)
         columns = [desc[0] for desc in result.description]
         rows = result.fetchall()
