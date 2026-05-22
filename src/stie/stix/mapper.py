@@ -55,7 +55,7 @@ def threat_report_to_stix(report: ThreatReport) -> Report:
 
     external_refs = []
     for ref in report.references:
-        external_refs.append(stix2.ExternalReference(url=ref))
+        external_refs.append(stix2.ExternalReference(source_name="stie", url=ref))
 
     return Report(
         id=f"report--{report.id}",
