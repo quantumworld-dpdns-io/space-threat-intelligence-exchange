@@ -16,7 +16,7 @@ class CampaignBase(BaseModel):
     actor: Optional[str] = None
     motivation: Optional[str] = None
     target_sectors: list[str] = Field(default_factory=list)
-    target_ regions: list[str] = Field(default_factory=list)
+    target_regions: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
 
 
