@@ -67,7 +67,6 @@ bandit = "^1.8.0"
 semgrep = "^1.102.0"
 safety = "^3.3.0"
 gitleaks = "^8.21.0"
-trivy = "^0.57.0"
 
 [tool.ruff]
 target-version = "py311"
