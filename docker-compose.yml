@@ -1,0 +1,139 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://stie:stie@postgres:5432/stie
+      - REDIS_URL=redis://redis:6379/0
+      - QDRANT_URL=http://qdrant:6333
+      - P2P_BOOTSTRAP_PEERS=["/ip4/0.0.0.0/tcp/9001/p2p/"]
+      - AI_LLM_API_URL=http://ollama:11434
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      qdrant:
+        condition: service_started
+    volumes:
+      - ./src:/app/src
+      - ./alembic:/app/alembic
+    networks:
+      - stie-net
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: stie
+      POSTGRES_PASSWORD: stie
+      POSTGRES_DB: stie
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stie"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stie-net
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - stie-net
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - stie-net
+
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    networks:
+      - stie-net
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - stie-net
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["python", "-m", "mcp_server.server"]
+    ports:
+      - "8100:8100"
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - AI_LLM_API_URL=http://ollama:11434
+    depends_on:
+      - qdrant
+      - ollama
+    networks:
+      - stie-net
+
+  duckdb-worker:
+    image: python:3.11-slim
+    command: >
+      sh -c "pip install duckdb pyarrow && python -c '
+      import duckdb
+      con = duckdb.connect(\"/data/analytics.duckdb\")
+      print(\"DuckDB ready\")
+      ' && tail -f /dev/null"
+    volumes:
+      - duckdb-data:/data
+    networks:
+      - stie-net
+
+volumes:
+  postgres-data:
+  redis-data:
+  qdrant-data:
+  chroma-data:
+  ollama-data:
+  duckdb-data:
+
+networks:
+  stie-net:
+    driver: bridge
