@@ -11,7 +11,7 @@ class TrinoClient:
 
     async def query(self, sql: str) -> list[dict[str, Any]]:
         async with httpx.AsyncClient(base_url=self.base_url, timeout=30.0) as client:
-            response = await client.post("/v1/statement", data=sql)
+            response = await client.post("/v1/statement", content=sql)
             response.raise_for_status()
             data = response.json()
             return self._parse_results(data)

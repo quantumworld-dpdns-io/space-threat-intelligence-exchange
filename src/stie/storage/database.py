@@ -40,6 +40,7 @@ async def close_db():
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    assert async_session_maker is not None
     async with async_session_maker() as session:
         try:
             yield session
