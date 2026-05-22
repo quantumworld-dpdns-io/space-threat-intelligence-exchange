@@ -37,6 +37,7 @@ class LLMClient:
         if system_prompt:
             payload["system"] = system_prompt
 
+        assert self.client is not None
         response = await self.client.post("/api/generate", json=payload)
         response.raise_for_status()
         data = response.json()
