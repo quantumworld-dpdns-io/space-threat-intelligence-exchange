@@ -9,6 +9,7 @@ description = "Decentralized CTI sharing for satellite intrusions and GNSS spoof
 authors = ["quantumworld-dpdns-io"]
 license = "MIT"
 readme = "README.md"
+packages = [{ include = "stie", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
