@@ -1,0 +1,8 @@
+apiVersion: v2
+name: space-threat-intelligence-exchange
+description: Decentralized CTI sharing for satellite intrusions and GNSS spoofing
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+sources:
+  - https://github.com/quantumworld-dpdns-io/space-threat-intelligence-exchange

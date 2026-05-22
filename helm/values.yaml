@@ -1,0 +1,51 @@
+replicaCount: 3
+
+image:
+  repository: ghcr.io/quantumworld-dpdns-io/space-threat-intelligence-exchange
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  p2pPort: 9001
+
+ingress:
+  enabled: true
+  host: stie.quantumworld-dpdns.io
+  tls: true
+
+resources:
+  api:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 2
+      memory: 2Gi
+  postgres:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+
+storage:
+  postgres: 50Gi
+  qdrant: 20Gi
+  redis: 5Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilization: 70
+
+config:
+  logLevel: INFO
+  debug: false
+  p2pEnabled: true
+  aiProvider: ollama
+  aiModel: gemma3
+  weaveEnabled: false
