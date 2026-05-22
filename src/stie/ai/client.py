@@ -59,6 +59,8 @@ class LLMClient:
             **kwargs,
         }
 
+        assert self.client is not None
+
         response = await self.client.post("/v1/chat/completions", json=payload, headers=headers)
         response.raise_for_status()
         data = response.json()
