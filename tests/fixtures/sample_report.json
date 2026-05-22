@@ -1,0 +1,32 @@
+{
+  "title": "Suspicious Uplink Activity Detected on GEO-CommSat-4",
+  "description": "On 2026-05-15, anomalous uplink commands were detected targeting the GEO-CommSat-4 communications satellite. The commands appeared to originate from an unauthorized ground station and attempted to modify the satellite's beam pattern configuration. The attack was mitigated by automated anomaly detection systems before any configuration changes were applied.",
+  "threat_type": "satellite_intrusion",
+  "severity": "high",
+  "confidence": "medium",
+  "tlp_level": "amber",
+  "satellite_intrusion_type": "command_injection",
+  "affected_satellites": ["GEO-CommSat-4"],
+  "affected_systems": ["Uplink Command System", "Beam Pattern Controller"],
+  "start_time": "2026-05-15T14:23:00Z",
+  "end_time": "2026-05-15T14:27:00Z",
+  "observables": [
+    {"type": "ipv4", "value": "198.51.100.23"},
+    {"type": "domain", "value": "malicious-cmd.example.com"},
+    {"type": "hash", "value": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"}
+  ],
+  "courses_of_action": [
+    {
+      "action": "Block source IP",
+      "description": "Add the originating IP address to the blocklist on all ground stations",
+      "priority": "high"
+    },
+    {
+      "action": "Audit command logs",
+      "description": "Review all command logs for the past 48 hours for similar unauthorized patterns",
+      "priority": "medium"
+    }
+  ],
+  "tags": ["uplink-intrusion", "command-injection", "geostationary"],
+  "references": ["https://example.com/advisories/satellite-command-security"]
+}
