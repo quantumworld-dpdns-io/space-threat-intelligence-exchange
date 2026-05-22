@@ -40,18 +40,18 @@ class TestSTIXMapper:
         stix_report = threat_report_to_stix(sample_report)
         assert stix_report.name == "Satellite Intrusion Detected"
         assert stix_report.type == "report"
-        assert "satellite-intrusion" in stix_report.labels
+        assert "satellite-intrusion" in stix_report.report_types
 
     def test_report_to_stix_labels(self, sample_report):
         stix_report = threat_report_to_stix(sample_report)
-        assert "intrusion" in stix_report.labels
-        assert "telemetry" in stix_report.labels
+        assert "intrusion" in stix_report.report_types
+        assert "telemetry" in stix_report.report_types
 
     def test_report_to_stix_external_refs(self, sample_report):
         stix_report = threat_report_to_stix(sample_report)
         assert stix_report.external_references is not None
         assert len(stix_report.external_references) == 1
-        assert stix_report.external_references[0]["url"] == "https://example.com/ref1"
+        assert stix_report.external_references[0].url == "https://example.com/ref1"
 
     def test_report_to_stix_confidence(self, sample_report):
         stix_report = threat_report_to_stix(sample_report)
@@ -62,7 +62,7 @@ class TestSTIXMapper:
         stix_dict = {
             "name": stix_report.name,
             "description": stix_report.description,
-            "labels": stix_report.labels,
+            "report_types": stix_report.report_types,
             "external_references": stix_report.external_references,
         }
         result = threat_report_from_stix(stix_dict)
